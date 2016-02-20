@@ -78,15 +78,25 @@ class Product(models.Model, ItemRange):
         pgettext_lazy('Product field', 'name'), max_length=128)
     description = models.TextField(
         verbose_name=pgettext_lazy('Product field', 'description'))
+    unit = models.CharField(
+        verbose_name=pgettext_lazy('Product field', 'unit'),
+        max_length=8,
+        default=pgettext_lazy('Product field', 'hours')
+    )
     categories = models.ManyToManyField(
         Category, verbose_name=pgettext_lazy('Product field', 'categories'),
         related_name='products')
     price = PriceField(
         pgettext_lazy('Product field', 'price'),
         currency=settings.DEFAULT_CURRENCY, max_digits=12, decimal_places=2)
-    weight = WeightField(
-        pgettext_lazy('Product field', 'weight'), unit=settings.DEFAULT_WEIGHT,
-        max_digits=6, decimal_places=2)
+    # price_recurring = PriceField(
+    #     pgettext_lazy('Product field', 'recurring price'),
+    #     currency=settings.DEFAULT_CURRENCY, max_digits=12, decimal_places=2,
+    #     null=True
+    # )
+    # weight = WeightField(
+    #     pgettext_lazy('Product field', 'weight'), unit=settings.DEFAULT_WEIGHT,
+    #     max_digits=6, decimal_places=2)
     available_on = models.DateField(
         pgettext_lazy('Product field', 'available on'), blank=True, null=True)
     attributes = models.ManyToManyField(
@@ -156,8 +166,8 @@ class ProductVariant(models.Model, Item):
     def __str__(self):
         return self.name or self.sku
 
-    def get_weight(self):
-        return self.weight_override or self.product.weight
+    # def get_weight(self):
+    #     return self.weight_override or self.product.weight
 
     def check_quantity(self, quantity):
         available_quantity = self.get_stock_quantity()
