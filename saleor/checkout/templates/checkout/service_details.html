@@ -1,0 +1,14 @@
+{% load i18n %}
+{% load static from staticfiles %}
+{% load as_vertical_form from bootstrap %}
+
+
+<div class="conditional-visibility" >
+    {% with service=step.forms.service_form %}
+        <div class="row">
+            <div class="col-sm-6">
+                {{ service.plan_field|as_vertical_form }}
+            </div>
+
+        </div>
+</div>

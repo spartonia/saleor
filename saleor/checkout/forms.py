@@ -71,3 +71,9 @@ class ShippingForm(forms.Form):
 
 class AnonymousEmailForm(forms.Form):
     email = forms.EmailField()
+
+
+class ServiceChoiceForm(forms.Form):
+    # queryset=Variations.objects.all(), widget=forms.RadioSelect
+    CHOICES = (('1', 'once'), ('2', 'weekly'), ('3', 'biweekly'))
+    plan_field = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES)

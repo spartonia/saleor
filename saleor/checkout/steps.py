@@ -8,7 +8,7 @@ from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
 from satchless.process import InvalidData
 
-from .forms import ShippingForm, UserAddressesForm
+from .forms import ShippingForm, UserAddressesForm, ServiceChoiceForm
 from ..checkout.forms import AnonymousEmailForm
 from ..core.utils import BaseStep
 from ..delivery import get_delivery_options_for_items
@@ -41,6 +41,25 @@ class BaseCheckoutStep(BaseStep):
 
     def __str__(self):
         return self.step_name
+
+
+class DetailsStep(BaseCheckoutStep):
+    template = 'checkout/service_details.html'
+    title = _('Details')
+    step_name = 'details'
+
+    product_slug = 'flyttstadning'  # TODO: dynamic
+
+    def __init__(self, request, storage, checkout):
+        import ipdb; ipdb.set_trace()
+        super(DetailsStep, self).__init__(request, storage, checkout)
+
+        # add default item to cart
+        self.forms['service_form'] = ServiceChoiceForm(
+            request.POST or None,
+            # initial={}
+        )
+
 
 
 class ShippingAddressStep(BaseCheckoutStep):
@@ -206,6 +225,7 @@ class SummaryStep(BaseCheckoutStep):
         without_shipping = not checkout.is_shipping_required()
         initial_address = 'copy' if shipping_address else 'new'
         if request.user.is_authenticated():
+            # TODO pass old address as kwargs
             queryset = request.user.addresses.all()
             self.addresses = list(queryset)
             default_billing_address = request.user.default_billing_address

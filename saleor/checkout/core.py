@@ -4,7 +4,7 @@ from django.conf import settings
 from prices import Price
 from satchless.process import ProcessManager
 
-from .steps import ShippingAddressStep, ShippingMethodStep, SummaryStep
+from .steps import ShippingAddressStep, ShippingMethodStep, SummaryStep, DetailsStep
 from ..cart import Cart
 from ..core import analytics
 from ..order.models import Order
@@ -39,6 +39,8 @@ class Checkout(ProcessManager):
 
     def generate_steps(self, cart):
         self.cart = cart
+        self.details_step = DetailsStep(
+            self.request, self.storage['details'], checkout=self)
         if self.is_shipping_required():
             self.shipping_address_step = ShippingAddressStep(
                 self.request, self.storage['shipping_address'], checkout=self)
