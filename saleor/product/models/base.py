@@ -66,6 +66,7 @@ class Category(MPTTModel):
 
 
 class ProductManager(InheritanceManager):
+    # TODO: add: get available products by service_id (category id)
     def get_available_products(self):
         today = datetime.datetime.today()
         return self.get_queryset().filter(
@@ -83,12 +84,13 @@ class Product(models.Model, ItemRange):
         max_length=8,
         default=pgettext_lazy('Product field', 'hours')
     )
-    categories = models.ManyToManyField(
+    categories = models.ForeignKey(
         Category, verbose_name=pgettext_lazy('Product field', 'categories'),
         related_name='products')
     price = PriceField(
         pgettext_lazy('Product field', 'price'),
         currency=settings.DEFAULT_CURRENCY, max_digits=12, decimal_places=2)
+    main_product = models.BooleanField(default=False)
     # price_recurring = PriceField(
     #     pgettext_lazy('Product field', 'recurring price'),
     #     currency=settings.DEFAULT_CURRENCY, max_digits=12, decimal_places=2,
@@ -155,6 +157,7 @@ class ProductVariant(models.Model, Item):
         unit=settings.DEFAULT_WEIGHT, max_digits=6, decimal_places=2,
         blank=True, null=True)
     product = models.ForeignKey(Product, related_name='variants')
+    main_variant = models.BooleanField(default=False)
     attributes = JSONField(pgettext_lazy('Variant field', 'attributes'),
                            default={})
 
