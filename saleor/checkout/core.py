@@ -41,6 +41,7 @@ class Checkout(ProcessManager):
         self.cart = cart
         self.details_step = DetailsStep(
             self.request, self.storage['details'], checkout=self)
+        self.steps.append(self.details_step)
         if self.is_shipping_required():
             self.shipping_address_step = ShippingAddressStep(
                 self.request, self.storage['shipping_address'], checkout=self)

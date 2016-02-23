@@ -8,12 +8,14 @@ from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
 from satchless.process import InvalidData
 
-from .forms import ShippingForm, UserAddressesForm, ServiceChoiceForm
+from .forms import ShippingForm, UserAddressesForm, ServiceChoiceForm, get_form_class_for_service
 from ..checkout.forms import AnonymousEmailForm
 from ..core.utils import BaseStep
 from ..delivery import get_delivery_options_for_items
 from ..userprofile.forms import AddressForm
 from ..userprofile.models import Address, User
+from ..product.models import Category, Product, ProductVariant
+from ..cart import Cart
 
 
 def find_address_book_entry(addresses, address):
@@ -48,17 +50,64 @@ class DetailsStep(BaseCheckoutStep):
     title = _('Details')
     step_name = 'details'
 
-    product_slug = 'flyttstadning'  # TODO: dynamic
-
     def __init__(self, request, storage, checkout):
-        import ipdb; ipdb.set_trace()
-        super(DetailsStep, self).__init__(request, storage, checkout)
 
-        # add default item to cart
-        self.forms['service_form'] = ServiceChoiceForm(
-            request.POST or None,
-            # initial={}
-        )
+        super(DetailsStep, self).__init__(request, storage, checkout)
+        # TODO: get the product id from request url parameters
+        if False:  # url.params:
+            # service_cat_id = Category.objects.get(pk=url.params.service_id').id
+            pass
+        else:
+            service_cat = Category.objects.get(slug='hemstadning')
+            service_cat_id = service_cat.pk
+        self.storage['service_cat_id'] = service_cat_id
+        # import ipdb; ipdb.set_trace()
+        self.main_service = Product.objects.get(categories=service_cat, main_product=True)
+        self.storage['main_service_id'] = self.main_service.pk
+        self.additional_services = Product.objects.filter(categories=service_cat, main_product=False)
+        self.main_service_variant = self.main_service.variants.get(main_variant=True)
+        cart = Cart.for_session_cart(request.cart, discounts=request.discounts)
+        # print '*' * 40,  'main pvariant pk', self.main_service_variant.pk
+
+        if not request.cart:
+            cart.add(self.main_service_variant, 3, replace=True)
+        # import ipdb; ipdb.set_trace()
+
+        # remove products unrelated to current category, if any.
+        # Example: flyttstadning_biweekly in hemstadning category.
+        for line in cart:
+            if line.product.product.categories != service_cat:
+                cart.add(line.product, quantity=0, replace=True)
+
+        # TODO
+        # forms:
+        # service form
+        # time date form
+        # coupon form
+
+        service_form_class = get_form_class_for_service(self.main_service)
+        service_form = service_form_class(cart=cart, product=self.main_service,
+                                          data=request.POST or None)
+        self.forms['service_form'] = service_form
+
+    def process(self, extra_context=None):
+        context = dict(extra_context or {})
+        context['main_service'] = self.main_service
+        return super(DetailsStep, self).process(extra_context=context)
+
+    def forms_are_valid(self):
+        service_form = self.forms['service_form']
+        # service_form.save()
+
+    def validate(self):
+        return False
+
+    def save(self):
+        pass
+
+    def add_to_order(self, order):
+        pass
+
 
 
 

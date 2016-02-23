@@ -10,6 +10,7 @@ import django_cache_url
 
 
 DEBUG = ast.literal_eval(os.environ.get('DEBUG', 'True'))
+TEMPLATE_DEBUG = ast.literal_eval(os.environ.get('TEMPLATE_DEBUG', 'True'))
 
 SITE_ID = 1
 

@@ -1,6 +1,7 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
+from ..cart.forms import AddToCartForm
 
 class AddressChoiceIterator(forms.models.ModelChoiceIterator):
 
@@ -73,7 +74,27 @@ class AnonymousEmailForm(forms.Form):
     email = forms.EmailField()
 
 
-class ServiceChoiceForm(forms.Form):
+def get_form_class_for_service(product):
+    from ..product.models import Product
+    if isinstance(product, Product):
+        return ServiceChoiceForm
+    raise NotImplementedError
+
+from ..product.forms import VariantChoiceField
+
+class ServiceChoiceForm(AddToCartForm):
+    variant = VariantChoiceField(queryset=None)
+
+    def __init__(self, *args, **kwargs):
+        super(ServiceChoiceForm, self).__init__(*args, **kwargs)
+        self.fields['variant'].queryset = self.product.variants
+        self.fields['variant'].empty_label = None
+
+    def get_variant(self, cleaned_data):
+        return cleaned_data.get('variant')
+
     # queryset=Variations.objects.all(), widget=forms.RadioSelect
-    CHOICES = (('1', 'once'), ('2', 'weekly'), ('3', 'biweekly'))
-    plan_field = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES)
+    # CHOICES = (('1', 'once'), ('2', 'weekly'), ('3', 'biweekly'))
+    # variants = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES)
+    # hours  = forms.ChoiceField(choices=[(str(i), '%i hours' %i) for i in range(2, 10)])
+
