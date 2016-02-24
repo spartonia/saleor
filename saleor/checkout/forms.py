@@ -98,7 +98,6 @@ class ServiceChoiceForm(AddToCartForm):
 
     date = forms.DateField()
     time = forms.TimeField()
-    # quantity = DecimalQuantityField()
 
 
     def __init__(self, *args, **kwargs):
@@ -109,7 +108,11 @@ class ServiceChoiceForm(AddToCartForm):
         self.fields['variant'].initial = init_var
         # import ipdb; ipdb.set_trace()
         # self.fields['variant'].required = False
-        # self.fields['quantity'](choices=self.HEMSTADNING_HOURS_CHOICES)
+        self.fields['quantity'] = forms.ChoiceField(
+            choices=self.HEMSTADNING_HOURS_CHOICES,
+            initial=self.HEMSTADNING_HOURS_CHOICES[1][0])
+        # qtty.widget = forms.ChoiceField()
+        # import ipdb; ipdb.set_trace()
 
     def get_variant(self, cleaned_data):
         return cleaned_data.get('variant')
@@ -122,7 +125,7 @@ class ServiceChoiceForm(AddToCartForm):
 
 class ServiceDateTimeForm(forms.Form):
     # TODO: add init values
-    time = forms.TimeField()
+    time = forms.TimeField(widget=forms.TimeInput(format='%H:%M', attrs={'placeholder': 'HH:MM'}))
     date = forms.DateField()
 
     def get_cleaned_or_initial(self, fieldname):
