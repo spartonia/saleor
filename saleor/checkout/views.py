@@ -42,7 +42,7 @@ def update_details(request, which_service):
     # import ipdb; ipdb.set_trace()
     if request.method == 'POST':
 
-        product =  Product.objects.get(pk=which_service)
+        product = Product.objects.get(pk=which_service)
         service_form_class = get_form_class_for_service(product)
         service_form = service_form_class(cart=request.cart,
                 product=product,data=request.POST or None)

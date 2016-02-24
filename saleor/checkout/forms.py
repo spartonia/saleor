@@ -2,6 +2,8 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from ..cart.forms import AddToCartForm
+from ..product.forms import VariantChoiceField
+
 
 class AddressChoiceIterator(forms.models.ModelChoiceIterator):
 
@@ -80,15 +82,34 @@ def get_form_class_for_service(product):
         return ServiceChoiceForm
     raise NotImplementedError
 
-from ..product.forms import VariantChoiceField
+
+
 
 class ServiceChoiceForm(AddToCartForm):
-    variant = VariantChoiceField(queryset=None)
+
+    HEMSTADNING_HOURS_CHOICES = (
+        (2, _('2 hour (~35 m2)')),
+        (3, _('3 hour (~35 m2)')),
+        (4, _('4 hour (~35 m2)')),
+    )
+
+    variant = VariantChoiceField(queryset=None,
+            widget=forms.RadioSelect())
+
+    date = forms.DateField()
+    time = forms.TimeField()
+    # quantity = DecimalQuantityField()
+
 
     def __init__(self, *args, **kwargs):
         super(ServiceChoiceForm, self).__init__(*args, **kwargs)
         self.fields['variant'].queryset = self.product.variants
         self.fields['variant'].empty_label = None
+        init_var = self.product.variants.get(main_variant=True)
+        self.fields['variant'].initial = init_var
+        # import ipdb; ipdb.set_trace()
+        # self.fields['variant'].required = False
+        # self.fields['quantity'](choices=self.HEMSTADNING_HOURS_CHOICES)
 
     def get_variant(self, cleaned_data):
         return cleaned_data.get('variant')
@@ -97,4 +118,16 @@ class ServiceChoiceForm(AddToCartForm):
     # CHOICES = (('1', 'once'), ('2', 'weekly'), ('3', 'biweekly'))
     # variants = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES)
     # hours  = forms.ChoiceField(choices=[(str(i), '%i hours' %i) for i in range(2, 10)])
+
+
+class ServiceDateTimeForm(forms.Form):
+    # TODO: add init values
+    time = forms.TimeField()
+    date = forms.DateField()
+
+    def get_cleaned_or_initial(self, fieldname):
+        if hasattr(self, 'cleaned_data'):
+            return self.cleaned_data.get(fieldname)
+        else:
+            return self[fieldname].field.initial
 

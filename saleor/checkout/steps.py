@@ -8,7 +8,12 @@ from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
 from satchless.process import InvalidData
 
-from .forms import ShippingForm, UserAddressesForm, ServiceChoiceForm, get_form_class_for_service
+from .forms import (
+    ShippingForm,
+    UserAddressesForm,
+    get_form_class_for_service,
+    ServiceDateTimeForm
+)
 from ..checkout.forms import AnonymousEmailForm
 from ..core.utils import BaseStep
 from ..delivery import get_delivery_options_for_items
@@ -51,7 +56,7 @@ class DetailsStep(BaseCheckoutStep):
     step_name = 'details'
 
     def __init__(self, request, storage, checkout):
-
+        # import ipdb; ipdb.set_trace()
         super(DetailsStep, self).__init__(request, storage, checkout)
         # TODO: get the product id from request url parameters
         if False:  # url.params:
@@ -76,7 +81,7 @@ class DetailsStep(BaseCheckoutStep):
         # remove products unrelated to current category, if any.
         # Example: flyttstadning_biweekly in hemstadning category.
         for line in cart:
-            if line.product.product.categories != service_cat:
+            # if line.product.product.categories != service_cat:
                 cart.add(line.product, quantity=0, replace=True)
 
         # TODO
@@ -89,6 +94,7 @@ class DetailsStep(BaseCheckoutStep):
         service_form = service_form_class(cart=cart, product=self.main_service,
                                           data=request.POST or None)
         self.forms['service_form'] = service_form
+        self.forms['service_datetime_form'] = ServiceDateTimeForm()
 
     def process(self, extra_context=None):
         context = dict(extra_context or {})
@@ -96,11 +102,23 @@ class DetailsStep(BaseCheckoutStep):
         return super(DetailsStep, self).process(extra_context=context)
 
     def forms_are_valid(self):
+        self.date = None
+        self.time = None
+        service_datetime_form = self.forms['service_datetime_form']
+        # import ipdb; ipdb.set_trace()
+        if service_datetime_form.is_valid():
+            import ipdb; ipdb.set_trace()
+            pass
         service_form = self.forms['service_form']
+        if service_form.is_valid():
+            pass
+
         # service_form.save()
 
     def validate(self):
-        return False
+        form = self.forms['service_datetime_form']
+        if not form.is_valid():
+            return InvalidData()
 
     def save(self):
         pass
