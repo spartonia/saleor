@@ -6,18 +6,10 @@
 {% block forms %}
 <p>Hi there {{ step.storage.main_service_id }}</p>
 <!--action: cart:update-line ??????-->
-<form role="form" class="product-form form-vertical" method="post" action="{% url "checkout:update_details" which_service=step.storage.main_service_id%}">
+<form id="service-form" role="form" class="product-form form-vertical" method="post" action=".">
     {% csrf_token %}
     {{ step.forms.service_form.variant|materializecss }}
     {{ step.forms.service_form.quantity|materializecss }}
-    {{ step.forms.service_form.date|materializecss }}
-    {{ step.forms.service_form.time|materializecss }}
-
-    <div class="form-group">
-        <button class="btn btn-lg btn-block btn-primary">
-            {% trans "Add to cart" %}
-        </button>
-    </div>
 </form>
 
 <form role="form" class="product-form form-vertical" method="post" action=".">
@@ -32,4 +24,35 @@
     </div>
 </form>
 
+<div class="form-group">
+    <div>
+        <a href="{% url "checkout:index" %}" class="btn btn-primary btn-lg pull-right">{% trans "Proceed to Adress" %}</a>
+    </div>
+</div>
+
 {% endblock forms %}
+
+
+{% block footer_extra_scripts %}
+    $(document).ready(function() {
+    });
+    $("#service-form").change(function(event){
+        event.preventDefault();
+        var formData = $("#service-form").serialize();
+        <!--console.log(formData);-->
+        $.ajax({
+            type: "POST",
+            url: '{% url "checkout:update_details" %}',
+            data: formData,
+            success: function(data){
+                console.log(data);
+                $("#total").text(data.total);
+            },
+            error: function(response, error){
+                console.log(response);
+                console.log(error);
+            }
+        })
+    });
+
+{% endblock footer_extra_scripts %}

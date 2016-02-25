@@ -83,8 +83,6 @@ def get_form_class_for_service(product):
     raise NotImplementedError
 
 
-
-
 class ServiceChoiceForm(AddToCartForm):
 
     HEMSTADNING_HOURS_CHOICES = (
@@ -93,12 +91,13 @@ class ServiceChoiceForm(AddToCartForm):
         (4, _('4 hour (~35 m2)')),
     )
 
-    variant = VariantChoiceField(queryset=None,
-            widget=forms.RadioSelect())
+    variant = VariantChoiceField(
+        queryset=None,
+        widget=forms.RadioSelect()
+    )
 
-    date = forms.DateField()
-    time = forms.TimeField()
-
+    # date = forms.DateField()
+    # time = forms.TimeField()
 
     def __init__(self, *args, **kwargs):
         super(ServiceChoiceForm, self).__init__(*args, **kwargs)
@@ -110,7 +109,9 @@ class ServiceChoiceForm(AddToCartForm):
         # self.fields['variant'].required = False
         self.fields['quantity'] = forms.ChoiceField(
             choices=self.HEMSTADNING_HOURS_CHOICES,
-            initial=self.HEMSTADNING_HOURS_CHOICES[1][0])
+            initial=self.HEMSTADNING_HOURS_CHOICES[1][0],
+        )
+        # self.fields['quantity'].widget.attrs={'onChange': 'refresh();'}
         # qtty.widget = forms.ChoiceField()
         # import ipdb; ipdb.set_trace()
 

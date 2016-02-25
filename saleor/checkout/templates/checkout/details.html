@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% load staticfiles %}
 {% load i18n %}
 {% load gross from prices_i18n %}
 {% load tax from prices_i18n %}
@@ -18,6 +19,11 @@
         </nav>
     </header>
 {% endblock %}
+
+{% block head_js %}
+<script type="text/javascript"
+        src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+{% endblock head_js %}
 
 {% block footer %}
 {% endblock %}
@@ -73,7 +79,7 @@
                         <tfoot>
                             <tr>
                                 <th colspan="2">{% trans "Total" %}</th>
-                                <th class="text-right">{% gross total_with_delivery %}</th>
+                                <th id="total" class="text-right">{% gross total_with_delivery %}</th>
                             </tr>
                         </tfoot>
                         <tbody>

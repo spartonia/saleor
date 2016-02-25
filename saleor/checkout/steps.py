@@ -81,7 +81,7 @@ class DetailsStep(BaseCheckoutStep):
         # remove products unrelated to current category, if any.
         # Example: flyttstadning_biweekly in hemstadning category.
         for line in cart:
-            # if line.product.product.categories != service_cat:
+            if line.product.product.categories != service_cat:
                 cart.add(line.product, quantity=0, replace=True)
 
         # TODO

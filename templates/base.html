@@ -15,6 +15,7 @@
         <link rel="stylesheet" type="text/css" href="{% static "css/storefront.css" %}">
 
         {% block stylesheet %}{% endblock stylesheet %}
+        {% block head_js %}{% endblock head_js %}
 
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -116,6 +117,10 @@
         {% endblock %}
         {% block footer_scripts %}
             <script src="{% static "js/storefront.js" %}"></script>
+            <script type="text/javascript">
+                {% block footer_extra_scripts %}{% endblock footer_extra_scripts %}
+            </script>
+
         {% endblock footer_scripts %}
     </body>
 </html>
