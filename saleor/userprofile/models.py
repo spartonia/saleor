@@ -38,8 +38,8 @@ class Address(models.Model):
     last_name = models.CharField(
         pgettext_lazy('Address field', 'last name'),
         max_length=256)
-    company_name = models.CharField(
-        pgettext_lazy('Address field', 'company or organization'),
+    personal_number = models.CharField(
+        pgettext_lazy('Address field', 'personal number'),
         max_length=256, blank=True)
     street_address_1 = models.CharField(
         pgettext_lazy('Address field', 'address'),
@@ -57,7 +57,9 @@ class Address(models.Model):
         pgettext_lazy('Address field', 'postal code'),
         max_length=20, blank=True)
     country = CountryField(
-        pgettext_lazy('Address field', 'country'))
+        pgettext_lazy('Address field', 'country'),
+        default='Sweden'
+    )
     country_area = models.CharField(
         pgettext_lazy('Address field', 'state or province'),
         max_length=128, blank=True)

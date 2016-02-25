@@ -123,7 +123,7 @@ class DetailsStep(BaseCheckoutStep):
         return True
 
     def validate(self):
-        pass 
+        pass
 
     def save(self):
         self.storage['order_date'] = self.date
