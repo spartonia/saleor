@@ -41,34 +41,47 @@ def details(request, step, product_id=None):
 def update_details(request):
     if request.method == 'POST':
         if request.is_ajax():
-            which_service = int(request.POST.get('variant'))
-            quantity = int(request.POST.get('quantity'))
-            product = ProductVariant.objects.get(pk=which_service).product
-            cart = Cart.for_session_cart(request.cart, discounts=request.discounts)
-            product_variants = product.variants.all()
-            # remove all variants form cart, if any. Avoids duplicate varians: weekly,
-            # biweekly in one cart
-            for line in cart:
-                if line.product in product_variants:
-                    cart.add(line.product, quantity=0, replace=True)
+            which_service = request.POST.get('variant', {})
+            if which_service:  # selecting service stuff
+                which_service = int(which_service)
+                quantity = int(request.POST.get('quantity'))
+                product = ProductVariant.objects.get(pk=which_service).product
+                cart = Cart.for_session_cart(request.cart, discounts=request.discounts)
+                product_variants = product.variants.all()
+                # remove all variants form cart, if any. Avoids duplicate varians: weekly,
+                # biweekly in one cart
+                for line in cart:
+                    if line.product in product_variants:
+                        cart.add(line.product, quantity=0, replace=True)
 
-            variant = product.variants.get(id=which_service)
-            cart.add(variant, quantity, replace=True)  # data?
-            # import ipdb; ipdb.set_trace()
-            for line in cart:
-                data = None
-                if line.product.pk == which_service:
-                    data = request.POST
-                    response = {
-                        'productName': line.product.product.name,
-                        'subtotal': currencyfmt(
-                            line.get_total().gross,
-                            line.get_total().currency),
-                        'total': 0}
-                    if cart:
-                        response['total'] = currencyfmt(
-                            cart.get_total().gross, cart.get_total().currency)
-                    return JsonResponse(response)
+                variant = product.variants.get(id=which_service)
+                cart.add(variant, quantity, replace=True)  # data?
+                # import ipdb; ipdb.set_trace()
+                for line in cart:
+                    data = None
+                    if line.product.pk == which_service:
+                        data = request.POST
+                        response = {
+                            'productName': line.product.product.name,
+                            'subtotal': currencyfmt(
+                                line.get_total().gross,
+                                line.get_total().currency),
+                            'total': 0}
+                        if cart:
+                            response['total'] = currencyfmt(
+                                cart.get_total().gross, cart.get_total().currency)
+                        return JsonResponse(response)
+            else:  # selecting date/time stuff
+                time = request.POST.get('time')
+                date = request.POST.get('date')
+                # import ipdb; ipdb.set_trace()
+                request.session['order_date'] = date
+                request.session['order_time'] = time
+                response = {
+                    'date': date,
+                    'time': time
+                }
+                return JsonResponse(response)
 
         return HttpResponseRedirect(
                 reverse('checkout:details', kwargs={'step': 'details'}))

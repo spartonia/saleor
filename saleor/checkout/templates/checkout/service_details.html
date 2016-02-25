@@ -12,16 +12,11 @@
     {{ step.forms.service_form.quantity|materializecss }}
 </form>
 
-<form role="form" class="product-form form-vertical" method="post" action=".">
+<form id="datetime-form" role="form" class="product-form form-vertical" method="post" action=".">
     {% csrf_token %}
     {{ step.forms.service_datetime_form.time|materializecss }}
     {{ step.forms.service_datetime_form.date|materializecss }}
 
-    <div class="form-group">
-        <button class="btn btn-lg btn-block btn-primary">
-            {% trans "Add to cart" %}
-        </button>
-    </div>
 </form>
 
 <div class="form-group">
@@ -34,8 +29,6 @@
 
 
 {% block footer_extra_scripts %}
-    $(document).ready(function() {
-    });
     $("#service-form").change(function(event){
         event.preventDefault();
         var formData = $("#service-form").serialize();
@@ -45,8 +38,26 @@
             url: '{% url "checkout:update_details" %}',
             data: formData,
             success: function(data){
-                console.log(data);
                 $("#total").text(data.total);
+                // and others too..
+            },
+            error: function(response, error){
+                console.log(response);
+                console.log(error);
+            }
+        })
+    });
+    $("#datetime-form").change(function(event){
+        event.preventDefault();
+        var formData = $("#datetime-form").serialize();
+        <!--console.log(formData);-->
+        $.ajax({
+            type: "POST",
+            url: '{% url "checkout:update_details" %}',
+            data: formData,
+            success: function(data){
+                $("#date").text(data.date);
+                $("#time").text(data.time);
             },
             error: function(response, error){
                 console.log(response);

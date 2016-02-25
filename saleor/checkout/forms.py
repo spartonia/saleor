@@ -96,8 +96,6 @@ class ServiceChoiceForm(AddToCartForm):
         widget=forms.RadioSelect()
     )
 
-    # date = forms.DateField()
-    # time = forms.TimeField()
 
     def __init__(self, *args, **kwargs):
         super(ServiceChoiceForm, self).__init__(*args, **kwargs)
@@ -128,6 +126,9 @@ class ServiceDateTimeForm(forms.Form):
     # TODO: add init values
     time = forms.TimeField(widget=forms.TimeInput(format='%H:%M', attrs={'placeholder': 'HH:MM'}))
     date = forms.DateField()
+
+    def __init__(self, *args, **kwargs):
+        super(ServiceDateTimeForm, self).__init__(*args, **kwargs)
 
     def get_cleaned_or_initial(self, fieldname):
         if hasattr(self, 'cleaned_data'):

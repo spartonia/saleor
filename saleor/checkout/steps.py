@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 from operator import itemgetter
+import datetime
+from dateutil import parser as datetime_parser
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -54,6 +56,13 @@ class DetailsStep(BaseCheckoutStep):
     template = 'checkout/service_details.html'
     title = _('Details')
     step_name = 'details'
+    # TODO: moce to settings
+    ORDER_DEFAULT_DAYS_ORDERABLE = 5
+    DEFAULT_TIME = datetime.time(8, 00)
+    DEFAULT_DATE =  datetime.date.today() + datetime.timedelta(ORDER_DEFAULT_DAYS_ORDERABLE)
+
+    order_date = DEFAULT_DATE
+    order_time = DEFAULT_TIME
 
     def __init__(self, request, storage, checkout):
         # import ipdb; ipdb.set_trace()
@@ -75,8 +84,11 @@ class DetailsStep(BaseCheckoutStep):
         # print '*' * 40,  'main pvariant pk', self.main_service_variant.pk
 
         if not request.cart:
+            # first timer
             cart.add(self.main_service_variant, 3, replace=True)
-        # import ipdb; ipdb.set_trace()
+            request.session['order_date'] = self.order_date
+            request.session['order_time'] = self.order_time_
+
 
         # remove products unrelated to current category, if any.
         # Example: flyttstadning_biweekly in hemstadning category.
@@ -94,7 +106,13 @@ class DetailsStep(BaseCheckoutStep):
         service_form = service_form_class(cart=cart, product=self.main_service,
                                           data=request.POST or None)
         self.forms['service_form'] = service_form
-        self.forms['service_datetime_form'] = ServiceDateTimeForm()
+        self.forms['service_datetime_form'] = ServiceDateTimeForm(
+            request.POST or None,
+            initial={
+                'time': self.order_time,
+                'date': self.order_date
+            }
+        )
 
     def process(self, extra_context=None):
         context = dict(extra_context or {})
@@ -102,31 +120,20 @@ class DetailsStep(BaseCheckoutStep):
         return super(DetailsStep, self).process(extra_context=context)
 
     def forms_are_valid(self):
-        self.date = None
-        self.time = None
-        service_datetime_form = self.forms['service_datetime_form']
-        # import ipdb; ipdb.set_trace()
-        if service_datetime_form.is_valid():
-            import ipdb; ipdb.set_trace()
-            pass
-        service_form = self.forms['service_form']
-        if service_form.is_valid():
-            pass
-
-        # service_form.save()
+        return True
 
     def validate(self):
-        form = self.forms['service_datetime_form']
-        if not form.is_valid():
-            return InvalidData()
+        pass 
 
     def save(self):
-        pass
+        self.storage['order_date'] = self.date
+        self.storage['order_time'] = self.time
 
     def add_to_order(self, order):
+        # TODO: add date time to order
+        # order.time = datetime_parser.parse(self.time).time()
+        # order.date = datetime_parser.parse(self.date).date()
         pass
-
-
 
 
 class ShippingAddressStep(BaseCheckoutStep):
