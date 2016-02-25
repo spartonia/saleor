@@ -10,9 +10,8 @@ class AddressForm(forms.ModelForm):
     AUTOCOMPLETE_MAPPING = (
         ('first_name', 'given-name'),
         ('last_name', 'family-name'),
-        ('company_name', 'organization'),
+        ('personal_number', 'personal-number'),
         ('street_address_1', 'address-line1'),
-        ('street_address_2', 'address-line2'),
         ('city', 'address-level2'),
         ('postal_code', 'postal-code'),
         ('country_area', 'address-level1'),
@@ -24,7 +23,7 @@ class AddressForm(forms.ModelForm):
 
     class Meta:
         model = Address
-        exclude = []
+        exclude = ['street_address_2', 'country', 'city_area']
 
     def __init__(self, *args, **kwargs):
         super(AddressForm, self).__init__(*args, **kwargs)

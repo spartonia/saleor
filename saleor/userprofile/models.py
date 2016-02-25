@@ -40,13 +40,10 @@ class Address(models.Model):
         max_length=256)
     personal_number = models.CharField(
         pgettext_lazy('Address field', 'personal number'),
-        max_length=256, blank=True)
+        max_length=12)
     street_address_1 = models.CharField(
         pgettext_lazy('Address field', 'address'),
         max_length=256)
-    street_address_2 = models.CharField(
-        pgettext_lazy('Address field', 'address'),
-        max_length=256, blank=True)
     city = models.CharField(
         pgettext_lazy('Address field', 'city'),
         max_length=256)
@@ -55,7 +52,7 @@ class Address(models.Model):
         max_length=128, blank=True)
     postal_code = models.CharField(
         pgettext_lazy('Address field', 'postal code'),
-        max_length=20, blank=True)
+        max_length=20)
     country = CountryField(
         pgettext_lazy('Address field', 'country'),
         default='Sweden'
@@ -65,7 +62,7 @@ class Address(models.Model):
         max_length=128, blank=True)
     phone = models.CharField(
         pgettext_lazy('Address field', 'phone number'),
-        max_length=30, blank=True)
+        max_length=30)
 
     objects = AddressManager()
 
@@ -74,11 +71,11 @@ class Address(models.Model):
 
     def __repr__(self):
         return (
-            'Address(first_name=%r, last_name=%r, company_name=%r, '
-            'street_address_1=%r, street_address_2=%r, city=%r, '
+            'Address(first_name=%r, last_name=%r, personal_number=%r, '
+            'street_address_1=%r, city=%r, '
             'postal_code=%r, country=%r, country_area=%r, phone=%r)' % (
-                self.first_name, self.last_name, self.company_name,
-                self.street_address_1, self.street_address_2, self.city,
+                self.first_name, self.last_name, self.personal_number,
+                self.street_address_1, self.city,
                 self.postal_code, self.country, self.country_area,
                 self.phone))
 

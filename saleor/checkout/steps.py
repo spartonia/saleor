@@ -87,7 +87,7 @@ class DetailsStep(BaseCheckoutStep):
             # first timer
             cart.add(self.main_service_variant, 3, replace=True)
             request.session['order_date'] = self.order_date
-            request.session['order_time'] = self.order_time_
+            request.session['order_time'] = self.order_time
 
 
         # remove products unrelated to current category, if any.

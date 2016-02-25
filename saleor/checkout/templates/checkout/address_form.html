@@ -58,35 +58,32 @@
                 {{ new_address.last_name|as_vertical_form }}
             </div>
         </div>
-        {{ new_address.company_name|as_vertical_form }}
         <div class="row">
-            <div class="col-sm-8">
-                {{ new_address.street_address_1|as_vertical_form }}
+            <div class="col-sm-6">
+                {{ new_address.personal_number|as_vertical_form }}
             </div>
-            <div class="col-sm-4">
-                {{ new_address.street_address_2|as_vertical_form }}
+            <div class="col-sm-6">
+                {{ new_address.street_address_1|as_vertical_form }}
             </div>
         </div>
         <div class="row">
+            <div class="col-sm-6">
+                {{ new_address.postal_code|as_vertical_form }}
+            </div>
             <div class="col-sm-6">
                 {{ new_address.city|as_vertical_form }}
             </div>
-            <div class="col-sm-6">
-                {{ new_address.city_area|as_vertical_form }}
-            </div>
         </div>
         <div class="row">
-            <div class="col-sm-8">
-                {{ new_address.country_area|as_vertical_form }}
+            <div class="col-sm-6">
+                {{ new_address.phone|as_vertical_form }}
             </div>
-            <div class="col-sm-4">
-                {{ new_address.postal_code|as_vertical_form }}
+            {% if display_email_form %}
+            <div class="col-sm-6">
+                {{ step.forms.email|as_vertical_form  }}
             </div>
+            {% endif %}
         </div>
-        {{ new_address.country|as_vertical_form }}
-        {% if display_email_form %}
-            {{ step.forms.email|as_vertical_form  }}
-        {% endif %}
-        {{ new_address.phone|as_vertical_form }}
+
     {% endwith %}
 </div>
