@@ -5,17 +5,20 @@
 #    pip-compile requirements.in
 #
 babel==2.2.0
-babeldjango==0.2.2
-boto==2.39.0              # via django-offsite-storage
-braintree==3.24.0         # via django-payments
-cffi==1.5.0               # via cryptography
-cryptography==1.2.1       # via django-payments
-cssselect==0.9.1          # via premailer
-cssutils==1.0.1           # via premailer
+BabelDjango==0.2.2        # via django-prices
+boto==2.39.0
+braintree==3.24.0
+cffi==1.5.0
+click==6.3
+cryptography==1.2.1
+cssselect==0.9.1
+cssutils==1.0.1
+decorator==4.0.9
 dj-database-url==0.3.0
 dj-email-url==0.0.4
-django-absolute==0.3      # via django-emailit
+django-absolute==0.3
 django-cache-url==1.0.0
+django-clear-cache==0.3
 django-countries==3.4.1
 django-emailit==0.2.2
 django-materializecss-form==1.0.1
@@ -29,40 +32,53 @@ django-selectable==0.9.0
 django-versatileimagefield==1.2.2
 django==1.9.1
 djangorestframework==3.3.2
-enum34==1.1.2             # via cryptography
+enum34==1.1.2
 fake-factory==0.5.3
-funcsigs==0.4             # via mock
+first==2.0.1
+funcsigs==0.4
 google-measurement-protocol==0.1.5
-idna==2.0                 # via cryptography
-ipaddress==1.0.16         # via cryptography
+idna==2.0
+ipaddress==1.0.16
+ipdb==0.8.3
+ipython-genutils==0.1.0
+ipython==4.1.1
 jsonfield==1.0.3
-lxml==3.5.0               # via premailer
-markdown==2.6.5
+lxml==3.5.0
+Markdown==2.6.5
 mock==1.3.0
-pbr==1.8.1                # via mock
-pillow==3.1.0             # via django-versatileimagefield
-premailer==2.9.7          # via django-emailit
+path.py==8.1.2
+pbr==1.8.1
+pexpect==4.0.1
+pickleshare==0.6
+pillow==3.1.0
+pip-tools==1.6
+premailer==2.9.7
 prices==0.5.5
 psycopg2==2.6.1
+ptyprocess==0.5.1
 purl==1.2
-py==1.4.31                # via pytest
-pyasn1==0.1.9             # via cryptography
-pycparser==2.14           # via cffi
-pyjwt==1.4.0              # via django-payments
+py==1.4.31
+pyasn1==0.1.9
+pycparser==2.14
+pyjwt==1.4.0
 pytest-django==2.9.1
 pytest==2.8.5
-pytz==2015.7              # via babel
-redis==2.10.5             # via django-redis
+python-dateutil==2.4.2
+pytz==2015.7
+redis==2.10.5
 requests==2.9.1
 satchless==1.1.3
-six==1.10.0               # via cryptography, mock, purl
-stripe==1.28.0            # via django-payments
-suds-jurko==0.6           # via django-payments
-unidecode==0.4.18
-uwsgi==2.0.12
+simplegeneric==0.8.1
+six==1.10.0
+stripe==1.28.0
+suds-jurko==0.6
+traitlets==4.1.0
+Unidecode==0.4.18
+uWSGI==2.0.12
+wheel==0.24.0
 whitenoise==2.0.6
-xmltodict==0.9.2          # via django-payments
+xmltodict==0.9.2
 
 # The following packages are commented out because they are
 # considered to be unsafe in a requirements file:
-# setuptools==19.4          # via cryptography
+# setuptools                # via cryptography, ipdb, ipython
