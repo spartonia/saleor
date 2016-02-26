@@ -55,7 +55,7 @@ class Address(models.Model):
         max_length=20)
     country = CountryField(
         pgettext_lazy('Address field', 'country'),
-        default='Sweden'
+        default='SE'
     )
     country_area = models.CharField(
         pgettext_lazy('Address field', 'state or province'),

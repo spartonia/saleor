@@ -86,8 +86,8 @@ class DetailsStep(BaseCheckoutStep):
         if not request.cart:
             # first timer
             cart.add(self.main_service_variant, 3, replace=True)
-            request.session['order_date'] = self.order_date
-            request.session['order_time'] = self.order_time
+            request.session['order_date'] = str(self.order_date)
+            request.session['order_time'] = str(self.order_time)
 
 
         # remove products unrelated to current category, if any.
@@ -126,8 +126,8 @@ class DetailsStep(BaseCheckoutStep):
         pass
 
     def save(self):
-        self.storage['order_date'] = self.date
-        self.storage['order_time'] = self.time
+        self.storage['order_date'] = str(self.date)
+        self.storage['order_time'] = str(self.time)
 
     def add_to_order(self, order):
         # TODO: add date time to order
@@ -149,7 +149,7 @@ class ShippingAddressStep(BaseCheckoutStep):
         address = Address(**address_data)
         self.address = address
         self.address_id = storage.get('address_id')
-        initial_address = 'new'
+        initial_address = {}
         if request.user.is_authenticated():
             self.email = request.user.email
             addresses_queryset = request.user.addresses.all()
@@ -157,13 +157,13 @@ class ShippingAddressStep(BaseCheckoutStep):
             selected_address = find_address_book_entry(self.addresses, address)
             if selected_address:
                 address = None
-                initial_address = selected_address.id
+                initial_address = selected_address
             elif not address_data:
                 default_address = request.user.default_shipping_address
                 if default_address:
-                    initial_address = default_address.id
+                    initial_address = default_address
                 elif self.addresses:
-                    initial_address = self.addresses[0].id
+                    initial_address = self.addresses[0]
         else:
             email = storage.get('email', '')
             self.email = email
@@ -171,37 +171,41 @@ class ShippingAddressStep(BaseCheckoutStep):
                                                      initial={'email': email})
             addresses_queryset = None
 
-        self.forms['addresses_form'] = UserAddressesForm(
-            data=request.POST or None, queryset=addresses_queryset,
-            prefix=self.step_name, initial={'address': initial_address})
+        # self.forms['addresses_form'] = UserAddressesForm(
+        #     data=request.POST or None, queryset=addresses_queryset,
+        #     prefix=self.step_name, initial={'address': initial_address})
+        # import ipdb; ipdb.set_trace()
         self.forms['new_address'] = AddressForm(
-            request.POST or None, prefix=self.step_name, instance=address)
+            request.POST or None, prefix=self.step_name, instance=address,
+            initial=initial_address.__dict__)
 
     def process(self, extra_context=None):
         context = dict(extra_context or {})
-        context['addresses'] = self.addresses
+        # context['addresses'] = self.addresses
         return super(ShippingAddressStep, self).process(extra_context=context)
 
     def forms_are_valid(self):
         address = None
-        addresses_form = self.forms['addresses_form']
-        if addresses_form.is_valid():
-            choice = addresses_form.cleaned_data['address']
-            if choice == 'new':
-                new_address_form = self.forms['new_address']
-                if new_address_form.is_valid():
-                    address = Address(**new_address_form.cleaned_data)
-            else:
-                address = choice
+        # addresses_form = self.forms['addresses_form']
+        # if addresses_form.is_valid():
+        #     choice = addresses_form.cleaned_data['address']
+        choice = 'new'
+        if choice == 'new':
+            new_address_form = self.forms['new_address']
+            # import ipdb; ipdb.set_trace()
+            if new_address_form.is_valid():
+                address = Address(**new_address_form.cleaned_data)
+        else:
+            address = choice
 
-            if address:
-                own_address = find_address_book_entry(self.addresses, address)
-                if own_address:
-                    self.address = own_address
-                    self.address_id = own_address.id
-                else:
-                    self.address = address
-                    self.address_id = None
+        if address:
+            own_address = find_address_book_entry(self.addresses, address)
+            if own_address:
+                self.address = own_address
+                self.address_id = own_address.id
+            else:
+                self.address = address
+                self.address_id = None
 
         email_form = self.forms.get('email')
         if email_form:
@@ -218,8 +222,8 @@ class ShippingAddressStep(BaseCheckoutStep):
         except ValidationError as e:
             raise InvalidData(e.messages)
 
-        if not self.email:
-            raise InvalidData()
+        # if not self.email:
+        #     raise InvalidData()
 
     def save(self):
         self.storage['email'] = self.email
@@ -299,6 +303,7 @@ class SummaryStep(BaseCheckoutStep):
         without_shipping = not checkout.is_shipping_required()
         initial_address = 'copy' if shipping_address else 'new'
         if request.user.is_authenticated():
+            # import ipdb; ipdb.set_trace()
             # TODO pass old address as kwargs
             queryset = request.user.addresses.all()
             self.addresses = list(queryset)
