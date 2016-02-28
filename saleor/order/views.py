@@ -25,6 +25,7 @@ def details(request, token):
 
 
 def payment(request, token):
+    import ipdb; ipdb.set_trace()
     orders = Order.objects.prefetch_related('groups__items')
     order = get_object_or_404(orders, token=token)
     groups = order.groups.all()
@@ -59,6 +60,7 @@ def payment(request, token):
 
 @check_order_status
 def start_payment(request, order, variant):
+    import ipdb; ipdb.set_trace()
     waiting_payments = order.payments.filter(status='waiting').exists()
     if waiting_payments:
         return redirect('order:payment', token=order.token)
